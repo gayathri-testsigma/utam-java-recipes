@@ -11,7 +11,10 @@ import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import utam.force.pageobjects.DetailPanelDesktop;
 import utam.force.pageobjects.ListViewManagerHeader;
+import utam.force.pageobjects.PageBlockItem;
+import utam.force.pageobjects.RecordLayout;
 import utam.global.pageobjects.ConsoleObjectHome;
 import utam.global.pageobjects.RecordActionWrapper;
 import utam.global.pageobjects.RecordHomeFlexipage2;
@@ -32,7 +35,7 @@ import utam.utils.salesforce.TestEnvironment;
  */
 public class RecordCreationTests extends SalesforceWebTestBase {
 
-  private final TestEnvironment testEnvironment = getTestEnvironment("sandbox44");
+  private final TestEnvironment testEnvironment = getTestEnvironment("sandbox");
 
   @BeforeTest
   public void setup() {
@@ -123,6 +126,91 @@ public class RecordCreationTests extends SalesforceWebTestBase {
 
     log("Load Accounts Record Home page");
     from(RecordHomeFlexipage2.class);
+  }
+
+  @Test
+  public void testCancelAccount() {
+    RecordActionWrapper recordFormModal = openRecordModal(RecordType.Account);
+
+    // todo - depending on org setup, modal might be present, then uncomment next lines
+    // log("Load Change Record Type Modal");
+    // recordTypeModal = from(RecordActionWrapper.class);
+    // log("Change Record Type Modal: click button 'New'");
+    // recordTypeModal.waitForChangeRecordFooter().clickButton("Next");
+
+    log("Load Record Form Modal");
+    BaseRecordForm recordForm = recordFormModal.getRecordForm();
+    LwcRecordLayout recordLayout = recordForm.getRecordLayout();
+
+    log("Access record form item by index");
+    RecordLayoutItem item1 = recordLayout.getItem(1, 2, 1);
+
+    log("Enter account name");
+    final String accountName = "Gayathri's Utam Test";
+    item1.getTextInput().setText(accountName);
+
+    RecordLayoutItem item2 = recordLayout.getItem(1, 4, 1);
+    log("Enter account number");
+    final String accountNumber = "132456788";
+    item2.getTextInput().setText(accountNumber);
+
+
+    RecordLayoutItem item3 = recordLayout.getItem(1, 2, 2);
+    log("Enter phone number");
+    final String phone = "9238294";
+    item3.getTextInput().setText(phone);
+
+    log("Cancel record");
+    recordForm.clickFooterButton("Cancel");
+    recordFormModal.waitForAbsence();
+
+  }
+
+  @Test
+  public void testLeadRecordCreation() {
+    RecordActionWrapper recordFormModal = openRecordModal(RecordType.Lead);
+
+    // todo - depending on org setup, modal might be present, then uncomment next lines
+    // log("Load Change Record Type Modal");
+    // recordTypeModal = from(RecordActionWrapper.class);
+    // log("Change Record Type Modal: click button 'New'");
+    // recordTypeModal.waitForChangeRecordFooter().clickButton("Next");
+
+    log("Load Record Form Modal");
+    BaseRecordForm recordForm = recordFormModal.getRecordForm();
+    LwcRecordLayout recordLayout = recordForm.getRecordLayout();
+
+    log("Access record form item by index");
+    RecordLayoutItem item = recordLayout.getItem(1, 2, 1);
+
+    log("Enter account name");
+    final String leadName = "TS's Utam Test";
+    item.getTextInput().setText(leadName);
+
+
+//    log("Save new record");
+//    recordForm.clickFooterButton("Save");
+//    recordFormModal.waitForAbsence();
+//
+//    log("Load Accounts Record Home page");
+//    from(RecordHomeFlexipage2.class);
+  }
+
+  @Test
+  public void testPageBlockSection() {
+    RecordActionWrapper recordFormModal = openRecordModal(RecordType.Lead);
+
+    log("Load Record Form Modal");
+    BaseRecordForm recordForm = recordFormModal.getRecordForm();
+//    LwcRecordLayout recordLayout = recordForm.getRecordLayout();
+//    RecordLayoutItem item = recordLayout.getItem(1, 2, 1);
+
+    RecordLayout recordLayout = loader.load(DetailPanelDesktop.class)
+            .getRecordLayout();;
+
+    PageBlockItem item = recordLayout.getEditableItemByName("Account Name");
+    item.inlineEdit();
+
   }
 
   @AfterTest
